@@ -11,7 +11,8 @@ import huntgame
 height = 900
 width = 1200
 
-
+pygame.joystick.init()
+joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
 
 def run_first_chapter(screen, worldx, worldy, background, nightbackground, wolfGraphics, streamAppearancesByAim, streamNightAppearancesByAim, streamDimensionsByAim, streamCurveCoefficients, treeGraphics, treeNightGraphics, treeGreenness, rockGraphics, rockNightGraphics, decorGraphics, decorNightGraphics, decorDynamics, printGraphics, printGraphicsSmall, miscellaneousGraphics, miscellaneousNightGraphics, animalTypes, animalGraphics, secondyear=False):
     globinfo = readglobals()
@@ -86,6 +87,7 @@ def run_first_chapter(screen, worldx, worldy, background, nightbackground, wolfG
         pressed = pygame.key.get_pressed() # This method of movement checking
         newposx = playerx                  # considers all keys which may be
         newposy = playery                  # pressed at the end of a tick/frame.
+        
         if pressed[pygame.K_RIGHT]:
             newposx += 1
         if pressed[pygame.K_LEFT]:
@@ -98,6 +100,24 @@ def run_first_chapter(screen, worldx, worldy, background, nightbackground, wolfG
             speed = 40
         else:
             speed = 10
+        
+        #JOYSTICK
+        if joysticks:  #Checks if the joystick is connected. If not the arrow keys are used
+            joystick = pygame.joystick.Joystick(0)
+
+            if pygame.joystick.Joystick(0).get_button(1):
+                speed = 40
+            else:
+                speed = 10
+                    
+            joyx = round(joystick.get_axis(0))
+            joyy = round(joystick.get_axis(1))
+
+            newposx = playerx + int(joyx * speed)
+            newposy = playery + int(joyy * speed) 
+
+            pygame.display.update() 
+
         # Newpos variables currently indicate only the direction of motion as a
         # vector of variable magnitude.
         dist = ((newposx-playerx)**2 + (newposy-playery)**2) ** 0.5

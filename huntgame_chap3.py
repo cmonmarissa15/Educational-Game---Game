@@ -9,6 +9,9 @@ import dialog
 import pygame
 pygame.init()
 
+pygame.joystick.init()
+joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+
 # Currently, this function is called at the bottom of the script, so that the
 # script can run for itself.
 
@@ -59,6 +62,24 @@ def run_hunting_game_chap3(screen,borders,huntworld,time,night,framelists,wolfGr
             speed = 40
         else:
             speed = 10
+
+        #JOYSTICK
+        if joysticks:  #Checks if the joystick is connected. If not the arrow keys are used
+            joystick = pygame.joystick.Joystick(0)
+
+            if pygame.joystick.Joystick(0).get_button(1):
+                speed = 40
+            else:
+                speed = 10
+                    
+            joyx = round(joystick.get_axis(0))
+            joyy = round(joystick.get_axis(1))
+
+            newposx = playerx + int(joyx * speed)
+            newposy = playery + int(joyy * speed) 
+
+            pygame.display.update() 
+
         # Newpos variables currently indicate only the direction of motion as a
         # vector of variable magnitude.
         dist = ((newposx-playerx)**2 + (newposy-playery)**2) ** 0.5

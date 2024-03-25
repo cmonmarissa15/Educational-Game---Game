@@ -4,6 +4,9 @@
 #import necessary systems
 import pygame
 
+pygame.joystick.init()
+joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+
 def character_select(screen,menuGraphics):
     window_width, window_height = screen.get_width(), screen.get_height()
     settingsfile = open("settings.txt",'r')
@@ -19,9 +22,9 @@ def character_select(screen,menuGraphics):
   
     # rendering text for each wolf for later use
     Aspen = smallfont.render('Aspen', True,color)
-    Mani = smallfont.render('Mani', True , color)
-    Kewa = smallfont.render('Kewa', True , color)
-    Nico = smallfont.render('Nico', True , color)
+    Mani = smallfont.render('Máni', True , color)
+    Kewa = smallfont.render('Khewa', True , color)
+    Nico = smallfont.render('Niko', True , color)
     Sparrow = smallfont.render('Sparrow', True , color)
     Timber = smallfont.render('Timber', True , color)
     
@@ -39,9 +42,9 @@ def character_select(screen,menuGraphics):
         screen.blit(menuGraphics['indicator'],positions1list[position1])
         
         #Labelling for the wolves' names
-        screen.blit(Mani, (window_width/10, window_height/20))
+        screen.blit(Aspen, (window_width/10, window_height/20))
         screen.blit(Kewa, (window_width/2.25, window_height/20))
-        screen.blit(Aspen, (window_width/1.3, window_height/20))
+        screen.blit(Mani, (window_width/1.3, window_height/20))
         screen.blit(Nico, (window_width/10, window_height/1.8))
         screen.blit(Sparrow, (window_width/2.25, window_height/1.8))
         screen.blit(Timber, (window_width/1.3, window_height/1.8))
@@ -51,6 +54,12 @@ def character_select(screen,menuGraphics):
     draw_char_screen(screen,menuGraphics,window_width,window_height)
 
     runningcyc = True
+
+    #JOYSTICK
+    if joysticks:  #Checks if the joystick is connected. If not the arrow keys are used
+        joystick = pygame.joystick.Joystick(0)
+        #position1 = round(joystick.get_axis(0))
+
     while runningcyc:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:  # If 'x' button selected, end
@@ -66,6 +75,25 @@ def character_select(screen,menuGraphics):
                     position1 += 3
                 draw_char_screen(screen,menuGraphics,window_width,window_height)
                 if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
+                    currentsettings[2] = str(position1) + '\n'
+                    settingsfile = open("settings.txt",'w')
+                    for eachline in currentsettings:
+                        settingsfile.write(eachline)
+                    settingsfile.close()
+                    runningcyc = False
+                
+            #JOYSTICK
+            elif joysticks: 
+                if round(joystick.get_axis(1)) == -1 and position1 > 2: # Moving joystick up
+                    position1 -= 3
+                elif round(joystick.get_axis(1)) == 1 and position1 < 3: # Moving joystick down
+                    position1 += 3
+                elif round(joystick.get_axis(0)) == 1 and position1 % 3 != 2: # Moving joystick right
+                    position1 += 1  
+                elif round(joystick.get_axis(0)) == -1 and position1 % 3 != 0: # Moving joystick left
+                    position1 -= 1 
+                draw_char_screen(screen,menuGraphics,window_width,window_height)
+                if pygame.joystick.Joystick(0).get_button(0):
                     currentsettings[2] = str(position1) + '\n'
                     settingsfile = open("settings.txt",'w')
                     for eachline in currentsettings:

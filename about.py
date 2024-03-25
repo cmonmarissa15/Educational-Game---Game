@@ -4,6 +4,9 @@
 import pygame
 from dialog import bliterate
 
+pygame.joystick.init()
+joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+
 # This function does the work of placing the text.  It is a function
 # so that the surface on which things must be drawn, screen, can be
 # passed to it from main_menu.py.  The argument and the item sent to
@@ -43,3 +46,8 @@ def about_screen(screen):
                 aboutscreen = False
             elif event.type == pygame.QUIT:
                 return 'stop'
+            #JOYSTICK
+            if joysticks:  # Checks if the joystick is connected. If not, the arrow keys are used
+                if event.type == pygame.JOYBUTTONDOWN:
+                    if pygame.joystick.Joystick(0).get_button(0):
+                        aboutscreen = False

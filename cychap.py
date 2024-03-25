@@ -5,6 +5,9 @@
 import pygame
 import os
 
+pygame.joystick.init()
+joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+
 def chapter_select(screen,menuGraphics):
 
     window_width, window_height = screen.get_width(), screen.get_height()
@@ -32,6 +35,11 @@ def chapter_select(screen,menuGraphics):
         pygame.display.update()
     draw_chapter_screen(screen,menuGraphics,window_width,window_height)
 
+    #JOYSTICK
+    if joysticks:  #Checks if the joystick is connected. If not the arrow keys are used
+        joystick = pygame.joystick.Joystick(0)
+        #position = round(joystick.get_axis(0))
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:  # If 'x' button selected, end
@@ -43,4 +51,14 @@ def chapter_select(screen,menuGraphics):
                     position -= 1
                 draw_chapter_screen(screen,menuGraphics,window_width,window_height)
                 if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
+                    return position
+                
+            #JOYSTICK
+            elif joysticks: # For keys up and down, move
+                if round(joystick.get_axis(0)) == -1 and position > 0: # Moving joystick left
+                    position -= 1
+                elif round(joystick.get_axis(0)) == 1 and position < 2: # Moving joystick right
+                    position += 1
+                draw_chapter_screen(screen,menuGraphics,window_width,window_height)
+                if pygame.joystick.Joystick(0).get_button(0):
                     return position

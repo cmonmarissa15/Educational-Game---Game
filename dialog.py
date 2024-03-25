@@ -2,6 +2,9 @@ import pygame
 pygame.init()
 import os
 
+pygame.joystick.init()
+joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+
 # The linebreak function yields a list of image-type objects rendering a line
 # of the given text of the appropriate width.
 def linebreak(text,width,maxheight=0,font=pygame.font.SysFont('constantia',24),color=(239,228,176)):
@@ -107,6 +110,11 @@ def dialog(screen,question,options,image=None,width=0.5,height=1/3):
 
     drawscreen(runningwidth,runningheight,buffer,image)
 
+    #JOYSTICK
+    if joysticks:  #Checks if the joystick is connected. If not the arrow keys are used
+        joystick = pygame.joystick.Joystick(0)
+        #choice = round(joystick.get_axis(1))
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -117,6 +125,16 @@ def dialog(screen,question,options,image=None,width=0.5,height=1/3):
                 elif event.key == pygame.K_DOWN and choice < len(options) - 1:
                     choice += 1
                 elif event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
+                    return choice
+                drawscreen(runningwidth,runningheight,buffer,image)
+
+            #JOYSTICK
+            elif joysticks: # For keys up and down, move
+                if round(joystick.get_axis(1)) == -1 and choice > 0: # Moving joystick up
+                    choice -= 1                
+                elif round(joystick.get_axis(1)) == 1 and choice < len(options) - 1: # Moving joystick down
+                    choice += 1
+                elif pygame.joystick.Joystick(0).get_button(0):
                     return choice
                 drawscreen(runningwidth,runningheight,buffer,image)
 

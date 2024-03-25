@@ -9,6 +9,9 @@ import pygame
 import huntgame
 import huntgame_chap3
 
+pygame.joystick.init()
+joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+
 def run_third_chapter(screen, worldx, worldy, background, nightbackground, wolfGraphics, streamAppearancesByAim, streamNightAppearancesByAim, streamDimensionsByAim, streamCurveCoefficients, treeGraphics, treeNightGraphics, treeGreenness, rockGraphics, rockNightGraphics, decorGraphics, decorNightGraphics, decorDynamics, printGraphics, printGraphicsSmall, miscellaneousGraphics, miscellaneousNightGraphics, animalTypes, animalGraphics):
     globinfo = readglobals()
     window_width = globinfo['window_width']
@@ -84,6 +87,24 @@ def run_third_chapter(screen, worldx, worldy, background, nightbackground, wolfG
             health -= 0.1
         else:
             speed = 10
+
+        #JOYSTICK
+        if joysticks:  #Checks if the joystick is connected. If not the arrow keys are used
+            joystick = pygame.joystick.Joystick(0)
+
+            if pygame.joystick.Joystick(0).get_button(1):
+                speed = 40
+            else:
+                speed = 10
+                    
+            joyx = round(joystick.get_axis(0))
+            joyy = round(joystick.get_axis(1))
+
+            newposx = playerx + int(joyx * speed)
+            newposy = playery + int(joyy * speed) 
+
+            pygame.display.update() 
+
         # Newpos variables currently indicate only the direction of motion as a
         # vector of variable magnitude.
         dist = ((newposx-playerx)**2 + (newposy-playery)**2) ** 0.5
@@ -123,7 +144,7 @@ def run_third_chapter(screen, worldx, worldy, background, nightbackground, wolfG
                     # drawScreen(screen,window_width,window_height,framelists,playerx,playery,chapterworld,ybaselist,timelapsed,night,health,currentmode,currentframe, player_food, time_left)
                     
                     if(wolf_counter == 5):
-                        dialog.akela(screen,"Looks like you found all the Wolf Print")
+                        dialog.akela(screen,"Looks like you found all the Wolf Prints")
                         dialog.akela(screen,"Now it's time to hunt the biggest of them all.")
                         dialog.akela(screen,"Hunt a bison to win the game!")
                         

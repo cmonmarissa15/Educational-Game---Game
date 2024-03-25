@@ -8,6 +8,9 @@
 
 import pygame
 
+pygame.joystick.init()
+joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+
 def main_menu(screen,menuGraphics):
     # The positions of the indicator and the buttons, as well as the size of the
     # buttons, are all determined by the window dimensions such that they take
@@ -29,10 +32,17 @@ def main_menu(screen,menuGraphics):
 
     draw_main_menu(screen,menuGraphics,window_width,window_height)
 
+    #JOYSTICK
+    if joysticks:  #Checks if the joystick is connected. If not the arrow keys are used
+        joystick = pygame.joystick.Joystick(0)
+        #position = round(joystick.get_axis(1))
+    
+    
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:  # If 'x' button selected, end
                 return 'stop'
+            #ARROW KEYS
             elif event.type == pygame.KEYDOWN: # For keys up and down, move
                 if event.key == pygame.K_UP and position == 1: # indicator.
                     position -= 1
@@ -47,4 +57,15 @@ def main_menu(screen,menuGraphics):
                     position += 1
                     draw_main_menu(screen,menuGraphics,window_width,window_height)
                 if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
+                    return position
+                
+            #JOYSTICK
+            elif joysticks: # For keys up and down, move
+                if round(joystick.get_axis(1)) == -1 and position == 1: # Moving joystick up
+                    position -= 1
+                    draw_main_menu(screen,menuGraphics,window_width,window_height)
+                elif round(joystick.get_axis(1)) == 1 and position == 0: # Moving joystick down
+                    position += 1
+                    draw_main_menu(screen,menuGraphics,window_width,window_height)
+                if pygame.joystick.Joystick(0).get_button(0):
                     return position
